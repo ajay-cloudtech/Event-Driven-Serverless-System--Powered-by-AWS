@@ -1,0 +1,44 @@
+/* src/components/Reports.css */
+
+.reports-container {
+    width: 100%;
+    padding: 20px;
+}
+
+.reports-container h2 {
+    margin-bottom: 20px;
+}
+
+/* Container for list and content to appear side-by-side */
+.reports-content {
+    display: flex;
+    
+}
+
+/* Style for the list of reports */
+.reports-list {
+    width: 100%;
+    list-style-type: none;
+    padding: 0;
+    margin-right: 30px;
+}
+
+.reports-list li {
+    margin: 10px 0;
+}
+
+/* Style for report content */
+.report-content {
+    width: 40%;
+    padding: 20px;
+    border-left: 1px solid #ddd;
+}
+
+.error {
+    color: red;
+    margin-bottom: 20px;
+}
+
+.rl{
+    margin-right: 150px;
+}

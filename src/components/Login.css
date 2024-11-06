@@ -1,0 +1,44 @@
+/* src/styles/Login.css */
+.login {
+    max-width: 400px;             /* Set a max width for the form */
+    margin: 50px auto;            /* Center the form horizontally and give top margin */
+    padding: 20px;                /* Add padding inside the form */
+    border: 1px solid #ccc;       /* Add a light gray border */
+    border-radius: 5px;           /* Rounded corners */
+    background-color: #f9f9f9;    /* Light background color */
+}
+
+.login h2 {
+    text-align: center;            /* Center the header text */
+    margin-bottom: 20px;          /* Space below the header */
+}
+
+.login input {
+    width: 100%;                   /* Make input fields full width */
+    padding: 10px;                /* Add padding inside input fields */
+    margin: 10px 0;               /* Space between input fields */
+    border: 1px solid #ccc;       /* Light gray border for input fields */
+    border-radius: 4px;           /* Rounded corners for input fields */
+}
+
+.login button {
+    width: 100%;                   /* Make button full width */
+    padding: 10px;                /* Add padding inside button */
+    background-color: #007bff;    /* Blue background color for the button */
+    color: white;                  /* White text color */
+    border: none;                  /* Remove border */
+    border-radius: 4px;           /* Rounded corners */
+    cursor: pointer;               /* Pointer cursor on hover */
+}
+
+.login button:hover {
+    background-color: #0056b3;     /* Darker blue on hover */
+}
+
+.register-button {
+    background: none;               /* No background */
+    border: none;                   /* No border */
+    color: #007bff;                 /* Blue text */
+    cursor: pointer;                /* Pointer cursor */
+    text-decoration: underline;     /* Underline text */
+}

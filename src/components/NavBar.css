@@ -1,0 +1,32 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Align items vertically in the center */
+    background-color: #7ecae1; /* Green background */
+    padding: 5px 20px; /* Reduced vertical padding */
+    color: white;
+    min-height: 60px; /* Maintain a minimum height */
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 20px; /* Space between links */
+}
+
+.navbar li {
+    cursor: pointer; /* Change cursor on hover */
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.navbar li:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+.h1 {
+    font-weight: bold;
+    font-size: 40px; /* Adjust font size */
+    line-height: 30px; /* Match line-height to font size */
+    color: rgb(17, 15, 14);
+}

@@ -1,0 +1,36 @@
+/* src/styles/Register.css */
+.register {
+    max-width: 400px;             /* Set a max width for the form */
+    margin: 50px auto;            /* Center the form horizontally and give top margin */
+    padding: 20px;                /* Add padding inside the form */
+    border: 1px solid #ccc;       /* Add a light gray border */
+    border-radius: 5px;           /* Rounded corners */
+    background-color: #f9f9f9;    /* Light background color */
+}
+
+.register h2 {
+    text-align: center;            /* Center the header text */
+    margin-bottom: 20px;          /* Space below the header */
+}
+
+.register input {
+    width: 100%;                   /* Make input fields full width */
+    padding: 10px;                /* Add padding inside input fields */
+    margin: 10px 0;               /* Space between input fields */
+    border: 1px solid #ccc;       /* Light gray border for input fields */
+    border-radius: 4px;           /* Rounded corners for input fields */
+}
+
+.register button {
+    width: 100%;                   /* Make button full width */
+    padding: 10px;                /* Add padding inside button */
+    background-color: #28a745;    /* Green background color for the button */
+    color: white;                  /* White text color */
+    border: none;                  /* Remove border */
+    border-radius: 4px;           /* Rounded corners */
+    cursor: pointer;               /* Pointer cursor on hover */
+}
+
+.register button:hover {
+    background-color: #218838;     /* Darker green on hover */
+}

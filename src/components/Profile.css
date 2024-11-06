@@ -1,0 +1,41 @@
+/* src/styles/Profile.css */
+.profile {
+    max-width: 400px;               /* Set a max width for the profile container */
+    margin: 50px auto;              /* Center the container horizontally and give top margin */
+    padding: 20px;                  /* Add padding inside the container */
+    border: 1px solid #ccc;         /* Light gray border */
+    border-radius: 5px;             /* Rounded corners */
+    background-color: #f9f9f9;      /* Light background color */
+}
+
+.profile h1 {
+    text-align: center;              /* Center the header text */
+    margin-bottom: 20px;            /* Space below the header */
+}
+
+.profile p {
+    margin: 10px 0;                 /* Space between paragraphs */
+}
+
+.error-message {
+    color: red;                      /* Red color for error messages */
+    text-align: center;              /* Center the error message */
+}
+
+.user-info {
+    margin-top: 20px;               /* Space above user info */
+}
+
+.logout-button {
+    padding: 10px;                  /* Add padding for the button */
+    background-color: #007bff;      /* Blue background color */
+    color: white;                    /* White text color */
+    border: none;                    /* Remove border */
+    border-radius: 4px;             /* Rounded corners */
+    cursor: pointer;                 /* Pointer cursor on hover */
+    width: 100%;                     /* Make button full width */
+}
+
+.logout-button:hover {
+    background-color: #0056b3;      /* Darker blue on hover */
+}

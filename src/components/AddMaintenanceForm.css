@@ -1,0 +1,51 @@
+.add-maintenance-form {
+    max-width: 400px; /* Match vehicle form width */
+    margin: 20px auto; /* Center the form */
+    padding: 20px; /* Add padding */
+    border: 1px solid #ccc; /* Border style */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #f9f9f9; /* Background color */
+}
+
+.add-maintenance-form h2 {
+    text-align: center; /* Center header text */
+}
+
+.form-group {
+    margin-bottom: 15px; /* Space between form elements */
+}
+
+.form-group label {
+    display: block; /* Block display for labels */
+    margin-bottom: 5px; /* Space below labels */
+}
+
+.form-group input,
+.form-group select { /* Add styling for input and select elements */
+    width: 100%; /* Full width */
+    padding: 8px; /* Inner padding */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+button {
+    width: 100%; /* Full width for buttons */
+    padding: 10px; /* Inner padding */
+    background-color: #4CAF50; /* Green background for submit button */
+    color: white; /* White text */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer on hover */
+    margin-bottom: 10px; /* Space between buttons */
+}
+
+button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+.cancel-button {
+    background-color: #f44336; /* Red background for cancel button */
+}
+
+.cancel-button:hover {
+    background-color: #d32f2f; /* Darker red on hover */
+}
