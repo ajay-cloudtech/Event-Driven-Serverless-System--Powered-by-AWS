@@ -3,7 +3,7 @@ import boto3
 import json
 from botocore.exceptions import ClientError
 import uuid  # Importing the UUID module
-from maintenance_utils import calculate_next_service_date, sort_records_by_date  # Import the library functions
+from maintenance_utils.calculate_next_service import calculate_next_service_date
 from components.vehicle_table import get_vehicle  # Import the function to get vehicle data
 from components.sqs_service import send_sqs_message, get_sqs_queue_url  # Import your SQS message sending function
 from boto3.dynamodb.conditions import Key
