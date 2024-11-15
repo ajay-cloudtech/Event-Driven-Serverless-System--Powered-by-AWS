@@ -1,18 +1,70 @@
-// src/components/Dashboard.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import VehicleForm from './VehicleForm';
-import AddMaintenanceForm from './AddMaintenanceForm'; // Import the AddMaintenanceForm component
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import AddMaintenanceForm from './AddMaintenanceForm';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import carImage from '../assets/carimage.jpg';
 
 const Dashboard = () => {
-    const navigate = useNavigate(); // Initialize useNavigate hook
+    const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [showVehicleForm, setShowVehicleForm] = useState(false);
-    const [showMaintenanceForm, setShowMaintenanceForm] = useState(false); // State to control the Maintenance form visibility
+    const [showMaintenanceForm, setShowMaintenanceForm] = useState(false);
+    const [vehicleCount, setVehicleCount] = useState(null); // Default to null to show loading state
+    const [maintenanceCount, setMaintenanceCount] = useState(null); // Default to null to show loading state
+    const [loading, setLoading] = useState(true); // Loading state for counts
 
-    const vehicles = ['Toyota Camry', 'Honda Accord', 'Ford Mustang']; // Sample vehicle data
+    // Fetch token from localStorage or other secure storage
+    const token = localStorage.getItem('accessToken'); // Replace with your token retrieval method
+
+    useEffect(() => {
+        const fetchCounts = async () => {
+            if (!token) {
+                console.error("No token found in localStorage");
+                return;
+            }
+
+            try {
+                setLoading(true); // Set loading state to true while fetching
+
+                // Fetch vehicle count
+                const vehicleResponse = await fetch('http://localhost:5000/vehicles/count', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const vehicleData = await vehicleResponse.json();
+                if (vehicleResponse.ok) {
+                    setVehicleCount(vehicleData.vehicle_count || 0);
+                } else {
+                    console.error('Error fetching vehicle count:', vehicleData.error || 'Unknown error');
+                    setVehicleCount(0);
+                }
+
+                // Fetch maintenance count
+                const maintenanceResponse = await fetch('http://localhost:5000/maintenance/count', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const maintenanceData = await maintenanceResponse.json();
+                if (maintenanceResponse.ok) {
+                    setMaintenanceCount(maintenanceData.maintenance_count || 0);
+                } else {
+                    console.error('Error fetching maintenance count:', maintenanceData.error || 'Unknown error');
+                    setMaintenanceCount(0);
+                }
+            } catch (error) {
+                console.error("Failed to fetch counts:", error);
+            } finally {
+                setLoading(false); // Set loading state to false after the fetch completes
+            }
+        };
+
+        fetchCounts();
+    }, [token]);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -20,11 +72,13 @@ const Dashboard = () => {
 
     const handleAddVehicle = () => {
         setShowVehicleForm(true);
+        setShowMaintenanceForm(false); // Hide Maintenance form if it's already showing
         setIsDropdownOpen(false);
     };
 
     const handleAddMaintenance = () => {
         setShowMaintenanceForm(true);
+        setShowVehicleForm(false); // Hide Vehicle form if it's already showing
         setIsDropdownOpen(false);
     };
 
@@ -36,17 +90,17 @@ const Dashboard = () => {
         setShowMaintenanceForm(false);
     };
 
-    // Navigation functions
     const handleTotalVehiclesClick = () => {
-        navigate('/maintenance-records'); // Navigate to maintenance records
+        navigate('/vehicles');
     };
 
-    const handleUpcomingMaintenancesClick = () => {
-        navigate('/maintenance-records'); // Navigate to Maintenances
+    const handleMaintenanceRecordsClick = () => {
+        navigate('/maintenance-records');
     };
 
-    const handleMaintenanceCompletedClick = () => {
-        navigate('/maintenance-records'); // Navigate to maintenance records
+    // Handle form submission and redirect to homepage
+    const handleFormSubmission = () => {
+        navigate('/'); // Redirect to homepage after form submission
     };
 
     return (
@@ -73,8 +127,11 @@ const Dashboard = () => {
                     )}
                 </div>
             </div>
-            {showVehicleForm && <VehicleForm onCancel={handleCancelVehicle} />}
-            {showMaintenanceForm && <AddMaintenanceForm vehicles={vehicles} onCancel={handleCancelMaintenance} />} {/* Pass vehicles to AddMaintenanceForm */}
+
+            {/* Show only one form based on the user's selection */}
+            {showVehicleForm && <VehicleForm onCancel={handleCancelVehicle} onSubmit={handleFormSubmission} />}
+            {showMaintenanceForm && <AddMaintenanceForm vehicles={['Toyota Camry', 'Honda Accord', 'Ford Mustang']} onCancel={handleCancelMaintenance} onSubmit={handleFormSubmission} />}
+
             <div className="dashboard-description">
                 <h3>Welcome to Vehicle Service Scheduler</h3>
                 <p>
@@ -84,13 +141,21 @@ const Dashboard = () => {
                 <p>
                     You can view all your vehicles, track upcoming maintenance services, and review completed maintenance records.
                 </p>
-                <p>
-                    <strong>Useful Links:</strong>
-                </p>
+                <p><strong>Useful Links:</strong></p>
                 <ul>
-                    <li><a href="/vehicles" style={{ color: '#4CAF50' }}>View Vehicles</a></li>
-                    <li><a href="/maintenance-records" style={{ color: '#4CAF50' }}>View Maintenance Records</a></li>
-                    <li><a href="/upcoming-maintenance" style={{ color: '#4CAF50' }}>Upcoming Maintenance</a></li>
+                    <li>
+                        <a href="/vehicles" style={{ color: '#4CAF50' }} onClick={handleTotalVehiclesClick}>
+                            View Vehicles - {loading ? "⏳" : vehicleCount}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/maintenance-records" style={{ color: '#4CAF50' }} onClick={handleMaintenanceRecordsClick}>
+                            View Maintenance Records - {loading ? "⏳" : maintenanceCount}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/maintenance-records" style={{ color: '#4CAF50' }}>Upcoming Maintenance</a>
+                    </li>
                 </ul>
             </div>
         </div>

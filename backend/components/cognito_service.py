@@ -123,6 +123,21 @@ def register_user(user_pool_id, username, password, email):
             ]
         )
         logging.info("User registration successful for username: %s", username)
+        # Automatically confirm the user
+        cognito_client.admin_confirm_sign_up(
+            UserPoolId=user_pool_id,
+            Username=username
+        )
+        cognito_client.admin_update_user_attributes(
+            UserPoolId=user_pool_id,
+            Username=username,
+            UserAttributes=[
+                {
+                    'Name': 'email_verified',
+                    'Value': 'true'
+                }
+            ]
+        )
         return {"message": "User registration successful."}
     except cognito_client.exceptions.UsernameExistsException:
         return {"error": "User already exists."}
@@ -211,3 +226,97 @@ def get_user_profile(access_token):
         return response  # Returns user attributes and details
     except ClientError as e:
         raise Exception(f"Unable to fetch user profile: {e}")
+
+def get_username_by_email(user_pool_id, email):
+    """Fetch the username using email to ensure compatibility with forgot password."""
+    try:
+        response = cognito_client.list_users(
+            UserPoolId=user_pool_id,
+            Filter=f'email = "{email}"'
+        )
+        # Confirm that a user was found
+        if response['Users']:
+            return response['Users'][0]['Username']
+        else:
+            return None  # User not found
+    except ClientError as e:
+        print(f"Error fetching username by email: {e}")
+        return None
+
+def forgot_password(user_pool_id, email):
+    client_id = get_user_pool_client_id(user_pool_id)
+    if not client_id:
+        return {"error": "Client ID not found."}
+
+    # Fetch username based on email if needed
+    username = get_username_by_email(user_pool_id, email)
+    if not username:
+        return {"error": "User not found."}
+
+    try:
+        response = cognito_client.forgot_password(
+            ClientId=client_id,
+            Username=username  # Using resolved username instead of email
+        )
+        return {"message": "Password reset instructions sent."}
+    except cognito_client.exceptions.UserNotFoundException:
+        return {"error": "User not found."}
+    except Exception as e:
+        return {"error": str(e)}
+
+def reset_password(user_pool_id, email, otp, new_password):
+    client_id = get_user_pool_client_id(user_pool_id)
+    if not client_id:
+        return {"error": "Client ID not found."}
+
+    # Fetch username based on email
+    username = get_username_by_email(user_pool_id, email)
+    if not username:
+        return {"error": "User not found."}
+
+    try:
+        # Confirm the password reset with OTP and new password
+        response = cognito_client.confirm_forgot_password(
+            ClientId=client_id,
+            Username=username,
+            ConfirmationCode=otp,
+            Password=new_password
+        )
+        return {"message": "Password reset successfully."}
+    except cognito_client.exceptions.CodeMismatchException:
+        return {"error": "Invalid OTP code."}
+    except cognito_client.exceptions.ExpiredCodeException:
+        return {"error": "OTP code has expired."}
+    except Exception as e:
+        return {"error": str(e)}
+
+def verify_email(user_pool_id, email, otp_code):
+    """
+    Verify the user's email address using the OTP.
+    """
+    client_id = get_user_pool_client_id(user_pool_id)
+    if not client_id:
+        return {"error": "Client ID not found."}
+
+    # Fetch the username using the email
+    username = get_username_by_email(user_pool_id, email)
+    if not username:
+        return {"error": "User not found."}  # Ensure we have the username
+
+    try:
+        # Verify the user's email using the OTP (passing the OTP code here)
+        response = cognito_client.verify_user_attribute(
+            AccessToken=username,  # Typically you need an access token to perform this
+            AttributeName='email',  # The attribute we want to verify
+            Code=otp_code           # The OTP code entered by the user
+        )
+        return {"message": "Email verified successfully."}
+    except cognito_client.exceptions.InvalidParameterException:
+        return {"error": "Invalid OTP. Please try again."}
+    except cognito_client.exceptions.CodeMismatchException:
+        return {"error": "Invalid OTP. Please try again."}
+    except cognito_client.exceptions.ExpiredCodeException:
+        return {"error": "OTP has expired. Please request a new one."}
+    except Exception as e:
+        logging.error(f"An error occurred during email verification: {e}")
+        return {"error": str(e)}

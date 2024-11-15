@@ -200,7 +200,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="4">No vehicles found.</td>
+                            <td colSpan="4">⏳</td>
                         </tr>
                     )}
                 </tbody>

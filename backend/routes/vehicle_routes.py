@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from components.vehicle_table import create_vehicle, get_all_vehicles, get_vehicles_list, get_vehicle, update_vehicle, delete_vehicle
 from routes.auth_routes import extract_user_id_from_token  # Import helper function
+from maintenance_utils.count_records import count_records  # Import count_records function
+
 
 vehicle_bp = Blueprint('vehicle', __name__)
 
@@ -77,3 +79,16 @@ def delete_vehicle_route(vehicle_id):
 
     response = delete_vehicle(vehicle_id, user_id)
     return jsonify({'message': response})
+
+@vehicle_bp.route('/vehicles/count', methods=['GET'])
+def count_vehicles_route():
+    user_id = extract_user_id_from_token(request)
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    try:
+        # Pass the user_id to the count_records function
+        vehicle_count = count_records("Vehicles", user_id)
+        return jsonify({'vehicle_count': vehicle_count})
+    except Exception as e:
+        return jsonify({'error': f"Failed to count vehicles: {str(e)}"}), 500

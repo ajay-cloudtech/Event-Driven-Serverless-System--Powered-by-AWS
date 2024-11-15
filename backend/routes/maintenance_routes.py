@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from maintenance_utils import sort_records_by_date
+from maintenance_utils.count_records import count_records
 from routes.auth_routes import extract_user_id_from_token
 from components.maintenance_table import (
     create_maintenance_record,
@@ -64,3 +65,16 @@ def delete_maintenance(maintenance_id):
     # Delete the maintenance record for the specific user and maintenance ID
     result = delete_maintenance_record(user_id, maintenance_id)
     return jsonify(result)
+
+@maintenance_bp.route('/maintenance/count', methods=['GET'])
+def count_maintenance_route():
+    user_id = extract_user_id_from_token(request)
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    try:
+        # Pass the user_id to the count_records function
+        maintenance_count = count_records("Maintenance", user_id)
+        return jsonify({'maintenance_count': maintenance_count})
+    except Exception as e:
+        return jsonify({'error': f"Failed to count maintenance records: {str(e)}"}), 500

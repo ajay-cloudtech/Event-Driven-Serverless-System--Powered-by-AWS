@@ -9,6 +9,7 @@ const Logout = ({ onLogout }) => {
         // Clear tokens from localStorage
         localStorage.removeItem('accessToken');
         localStorage.removeItem('idToken');
+        localStorage.removeItem('userId');
 
         // Call the onLogout function passed from App.js
         onLogout();

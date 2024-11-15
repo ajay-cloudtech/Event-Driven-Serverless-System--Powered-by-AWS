@@ -11,6 +11,7 @@ import Login from './components/Login';
 import Logout from './components/Logout';
 import ProtectedRoute from './components/ProtectedRoute';
 import 'font-awesome/css/font-awesome.min.css';
+import ResetPassword from './components/ResetPassword'; 
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('accessToken'));
@@ -40,6 +41,7 @@ function App() {
                     <Route path="/" element={<Navigate to="/login" />} />
                     <Route path="/login" element={<Login onLogin={handleLogin} />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ResetPassword />} />
 
                     {/* Protected Routes */}
                     <Route path="/dashboard" element={

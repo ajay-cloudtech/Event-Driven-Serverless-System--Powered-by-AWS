@@ -60,7 +60,7 @@ def get_bucket_name():
     
     :return: The S3 bucket name.
     """
-    return BUCKET_NAME  # No user ID needed for now
+    return BUCKET_NAME  
 
 import boto3
 from botocore.exceptions import ClientError

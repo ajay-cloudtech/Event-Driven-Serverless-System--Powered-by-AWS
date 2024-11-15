@@ -1,46 +1,60 @@
-// VehicleForm.js
 import React, { useState } from 'react';
 import './VehicleForm.css';
+import { useNavigate } from 'react-router-dom';  // Import the useNavigate hook
 
 const VehicleForm = ({ onCancel }) => {
     const [make, setMake] = useState('');
     const [model, setModel] = useState('');
     const [year, setYear] = useState('');
 
+    const navigate = useNavigate();  // Hook to navigate after successful form submission
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         const vehicleData = { make, model, year };
         const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
-        console.log('Access Token:', accessToken); // Check the token value
-    
+        if (!accessToken) {
+            alert('Please log in again.');
+            window.location.href = '/login';
+            return;
+        }
+
         try {
             const response = await fetch('http://127.0.0.1:5000/vehicles', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}` // Attach the token
+                    'Authorization': `Bearer ${accessToken}`, // Attach the token
                 },
                 body: JSON.stringify(vehicleData),
             });
-    
+
             const data = await response.json();
-            console.log('API Response:', data); // Debugging log
-            
+            console.log('API Response:', data);
+
             if (!response.ok) {
+                if (response.status === 401) {
+                    alert('Session expired. Please log in again.');
+                    window.location.href = '/login';  // Redirect to login page
+                    return;
+                }
                 throw new Error(data.error || 'Failed to add vehicle');
             }
 
             alert(data.message || 'Vehicle added successfully');
-            
+
             setMake('');
             setModel('');
             setYear('');
+
+            // Redirect to the /maintenance-records page after successful submission
+            navigate('/maintenance-records');  // Redirect to maintenance records page
         } catch (error) {
             console.error('Error adding vehicle:', error);
             alert(`Failed to add vehicle: ${error.message || 'Unknown error'}`);
         }
-    };    
+    };
 
     return (
         <div className="vehicle-form">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './AddMaintenanceForm.css';
+import { useNavigate } from 'react-router-dom';  // Import the useNavigate hook
 
 const AddMaintenanceRecord = ({ onCancel }) => {
     const [vehicles, setVehicles] = useState([]);
@@ -9,6 +10,8 @@ const AddMaintenanceRecord = ({ onCancel }) => {
     const [lastServiceDate, setLastServiceDate] = useState('');
 
     const maintenanceTypes = ['Comprehensive Service'];
+
+    const navigate = useNavigate();  // Hook to navigate after successful form submission
 
     // Fetch vehicles from the backend on component mount
     useEffect(() => {
@@ -79,6 +82,9 @@ const AddMaintenanceRecord = ({ onCancel }) => {
             setMileage('');
             setLastServiceDate('');
             window.alert('Maintenance record added successfully!');
+
+            // Redirect to the /maintenance-records page after successful submission
+            navigate('/maintenance-records');  // Redirect to maintenance records page
         } catch (error) {
             console.error('Error adding maintenance record:', error);
             alert(`Failed to add maintenance record: ${error.message}`);
