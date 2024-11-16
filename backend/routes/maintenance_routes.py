@@ -40,32 +40,6 @@ def get_maintenance_records():
     sorted_records = sort_records_by_date(records, 'next_service_date')
     return jsonify({'items': sorted_records})
 
-
-@maintenance_bp.route('/maintenance/<string:maintenance_id>', methods=['PUT'])
-def update_maintenance(maintenance_id):
-    user_id = extract_user_id_from_token(request)  # Extract the user ID from the token
-    if not user_id:
-        return jsonify({"error": "Unauthorized"}), 401
-
-    data = request.get_json()
-    maintenance_type = data.get('maintenance_type')
-    mileage = data.get('mileage')
-    last_service_date = data.get('last_service_date')
-    
-    # Update the maintenance record for the specific user and maintenance ID
-    result = update_maintenance_record(user_id, maintenance_id, maintenance_type, mileage, last_service_date)
-    return jsonify(result)
-
-@maintenance_bp.route('/maintenance/<string:maintenance_id>', methods=['DELETE'])
-def delete_maintenance(maintenance_id):
-    user_id = extract_user_id_from_token(request)  # Extract the user ID from the token
-    if not user_id:
-        return jsonify({"error": "Unauthorized"}), 401
-
-    # Delete the maintenance record for the specific user and maintenance ID
-    result = delete_maintenance_record(user_id, maintenance_id)
-    return jsonify(result)
-
 @maintenance_bp.route('/maintenance/count', methods=['GET'])
 def count_maintenance_route():
     user_id = extract_user_id_from_token(request)
