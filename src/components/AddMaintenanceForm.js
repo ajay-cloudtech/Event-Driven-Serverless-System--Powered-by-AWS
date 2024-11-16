@@ -18,7 +18,7 @@ const AddMaintenanceRecord = ({ onCancel }) => {
         const fetchVehicles = async () => {
             const accessToken = localStorage.getItem('accessToken');
             try {
-                const response = await fetch('http://localhost:5000/vehiclesList', {
+                const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehiclesList', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -60,7 +60,7 @@ const AddMaintenanceRecord = ({ onCancel }) => {
 
         try {
             const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch('http://localhost:5000/maintenance', {
+            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/maintenance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

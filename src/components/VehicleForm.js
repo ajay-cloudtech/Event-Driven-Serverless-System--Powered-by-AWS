@@ -21,7 +21,7 @@ const VehicleForm = ({ onCancel }) => {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/vehicles', {
+            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

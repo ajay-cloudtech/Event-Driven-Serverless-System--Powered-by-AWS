@@ -13,7 +13,7 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/register', {
+            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

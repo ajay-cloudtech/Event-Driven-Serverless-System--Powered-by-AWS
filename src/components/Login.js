@@ -12,7 +12,7 @@ const Login = ({ onLogin }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/login', {
+            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

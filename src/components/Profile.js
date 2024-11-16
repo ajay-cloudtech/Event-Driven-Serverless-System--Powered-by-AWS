@@ -14,7 +14,7 @@ const Profile = () => {
                 return;
             }
             try {
-                const response = await fetch('http://localhost:5000/profile', {
+                const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/profile', {
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Include 'Bearer' prefix
                     },

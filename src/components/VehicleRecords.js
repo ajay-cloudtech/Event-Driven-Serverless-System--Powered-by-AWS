@@ -7,7 +7,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         const fetchVehicles = async () => {
             try {
                 const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
-                const response = await fetch('http://localhost:5000/vehicles', {
+                const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles', {
                     headers: {
                         'Authorization': `Bearer ${accessToken}` // Attach token for user-specific data
                     }
@@ -58,7 +58,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         const vehicleToSave = vehicles.find(vehicle => vehicle.vehicle_id === vehicleId);
         try {
             const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
-            const response = await fetch(`http://localhost:5000/vehicles/${vehicleId}`, {
+            const response = await fetch(`http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles/${vehicleId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         if (window.confirm('Are you sure you want to delete this vehicle?')) {
             try {
                 const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
-                const response = await fetch(`http://localhost:5000/vehicles/${vehicleId}`, {
+                const response = await fetch(`http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles/${vehicleId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${accessToken}` // Attach token for user-specific data

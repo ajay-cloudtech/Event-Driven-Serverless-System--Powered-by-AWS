@@ -12,7 +12,7 @@ const ResetPassword = () => {
     const handleSendOtp = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/forgot-password', {
+            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/forgot-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

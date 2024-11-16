@@ -28,7 +28,7 @@ const Dashboard = () => {
                 setLoading(true); // Set loading state to true while fetching
 
                 // Fetch vehicle count
-                const vehicleResponse = await fetch('http://localhost:5000/vehicles/count', {
+                const vehicleResponse = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles/count', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const Dashboard = () => {
                 }
 
                 // Fetch maintenance count
-                const maintenanceResponse = await fetch('http://localhost:5000/maintenance/count', {
+                const maintenanceResponse = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/maintenance/count', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
