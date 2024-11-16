@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from routes.vehicle_routes import vehicle_bp
 from routes.maintenance_routes import maintenance_bp
@@ -10,13 +10,13 @@ from components.lambda_service import create_lambda_function, add_sqs_trigger_to
 from routes.s3_routes import s3_bp  # Import the S3 routes blueprint
 from components.cognito_service import setup_cognito_resources  # Import Cognito setup function
 from routes.auth_routes import auth_bp  # Import auth routes
-
+import os
 import logging
 
 # Configure logging at the start of your application
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='build')
 
 # CORS setup: Allow requests from your frontend
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -61,6 +61,15 @@ app.register_blueprint(vehicle_bp)
 app.register_blueprint(maintenance_bp)
 app.register_blueprint(s3_bp)
 app.register_blueprint(auth_bp)
+
+# Serve React static files
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react_app(path):
+    if path != "" and os.path.exists(f"build/{path}"):
+        return send_from_directory('build', path)
+    else:
+        return send_from_directory('build', 'index.html')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
