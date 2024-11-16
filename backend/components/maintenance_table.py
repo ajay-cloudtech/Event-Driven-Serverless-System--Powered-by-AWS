@@ -12,7 +12,7 @@ import time
 logging.basicConfig(level=logging.INFO)
 
 # Create a DynamoDB resource
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table_name = 'Maintenance'
 
 # Create the Maintenance table in DynamoDB

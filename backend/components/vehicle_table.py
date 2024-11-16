@@ -4,7 +4,7 @@ import uuid
 from boto3.dynamodb.conditions import Key
 
 # Create a DynamoDB resource
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table_name = 'Vehicles'
 
 # Create the Vehicles table in DynamoDB
