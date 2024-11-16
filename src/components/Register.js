@@ -1,4 +1,3 @@
-// src/components/Register.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';  // Import useNavigate
 import './Register.css';  // Import the CSS file
@@ -12,8 +11,14 @@ const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+
+        // Dynamically set the base URL based on the environment
+        const baseUrl = process.env.NODE_ENV === 'production'
+            ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+            : 'http://localhost:5000';
+
         try {
-            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/register', {
+            const response = await fetch(`${baseUrl}/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

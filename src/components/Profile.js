@@ -1,4 +1,3 @@
-// src/components/Profile.js
 import React, { useEffect, useState } from 'react';
 import './Profile.css';
 
@@ -13,8 +12,13 @@ const Profile = () => {
                 setMessage('Please log in to see your profile.');
                 return;
             }
+
+            const baseUrl = process.env.NODE_ENV === 'production'
+                ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+                : 'http://localhost:5000';
+
             try {
-                const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/profile', {
+                const response = await fetch(`${baseUrl}/profile`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Include 'Bearer' prefix
                     },

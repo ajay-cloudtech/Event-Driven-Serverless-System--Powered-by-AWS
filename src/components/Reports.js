@@ -9,6 +9,11 @@ const Reports = () => {
     const [error, setError] = useState(null); // For error handling
     const userId = 'ajaytest1'; // Replace this with actual user ID as needed
 
+    // Dynamically set the base URL based on the environment
+    const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+        : 'http://localhost:5000';
+
     useEffect(() => {
         const fetchReports = async () => {
             const storedUserId = localStorage.getItem('userId'); // Get user ID from local storage
@@ -18,7 +23,7 @@ const Reports = () => {
             }
     
             try {
-                const response = await fetch(`http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/api/reports?user_id=${storedUserId}`);
+                const response = await fetch(`${baseUrl}/api/reports?user_id=${storedUserId}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -38,7 +43,7 @@ const Reports = () => {
     const fetchReportContent = async (reportName) => {
         console.log("Fetching report:", reportName);
         try {
-            const response = await fetch(`http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/api/reports/${reportName.split('/').pop()}`);
+            const response = await fetch(`${baseUrl}/api/reports/${reportName.split('/').pop()}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }

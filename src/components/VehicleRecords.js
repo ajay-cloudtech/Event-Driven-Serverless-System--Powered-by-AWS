@@ -1,13 +1,17 @@
-// VehicleRecords.js
 import React, { useEffect } from 'react';
 import './VehicleAndMaintenanceRecords.css';
 
 const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
+    // Dynamically set the base URL based on the environment
+    const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+        : 'http://localhost:5000';
+
     useEffect(() => {
         const fetchVehicles = async () => {
             try {
                 const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
-                const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles', {
+                const response = await fetch(`${baseUrl}/vehicles`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}` // Attach token for user-specific data
                     }
@@ -58,7 +62,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         const vehicleToSave = vehicles.find(vehicle => vehicle.vehicle_id === vehicleId);
         try {
             const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
-            const response = await fetch(`http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles/${vehicleId}`, {
+            const response = await fetch(`${baseUrl}/vehicles/${vehicleId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -94,7 +98,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         if (window.confirm('Are you sure you want to delete this vehicle?')) {
             try {
                 const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
-                const response = await fetch(`http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles/${vehicleId}`, {
+                const response = await fetch(`${baseUrl}/vehicles/${vehicleId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${accessToken}` // Attach token for user-specific data
@@ -200,7 +204,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="4">⏳</td>
+                            <td colSpan="4"></td>
                         </tr>
                     )}
                 </tbody>

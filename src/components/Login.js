@@ -9,10 +9,14 @@ const Login = ({ onLogin }) => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
+    const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+        : 'http://localhost:5000';
+
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/login', {
+            const response = await fetch(`${baseUrl}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

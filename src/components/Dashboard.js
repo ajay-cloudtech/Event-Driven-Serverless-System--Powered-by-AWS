@@ -17,6 +17,10 @@ const Dashboard = () => {
     // Fetch token from localStorage or other secure storage
     const token = localStorage.getItem('accessToken'); // Replace with your token retrieval method
 
+    const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+        : 'http://localhost:5000';
+
     useEffect(() => {
         const fetchCounts = async () => {
             if (!token) {
@@ -28,7 +32,7 @@ const Dashboard = () => {
                 setLoading(true); // Set loading state to true while fetching
 
                 // Fetch vehicle count
-                const vehicleResponse = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles/count', {
+                const vehicleResponse = await fetch(`${baseUrl}/vehicles/count`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -43,7 +47,7 @@ const Dashboard = () => {
                 }
 
                 // Fetch maintenance count
-                const maintenanceResponse = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/maintenance/count', {
+                const maintenanceResponse = await fetch(`${baseUrl}/maintenance/count`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -64,7 +68,7 @@ const Dashboard = () => {
         };
 
         fetchCounts();
-    }, [token]);
+    }, [token, baseUrl]);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);

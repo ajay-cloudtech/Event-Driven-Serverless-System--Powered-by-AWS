@@ -9,6 +9,11 @@ const VehicleForm = ({ onCancel }) => {
 
     const navigate = useNavigate();  // Hook to navigate after successful form submission
 
+    // Dynamically set the base URL based on the environment
+    const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+        : 'http://localhost:5000';
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -21,7 +26,7 @@ const VehicleForm = ({ onCancel }) => {
         }
 
         try {
-            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehicles', {
+            const response = await fetch(`${baseUrl}/vehicles`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

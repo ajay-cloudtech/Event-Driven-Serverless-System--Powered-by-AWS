@@ -17,8 +17,12 @@ const MaintenanceRecords = ({ maintenanceRecords, setMaintenanceRecords, setErro
             return;
         }
 
+        const baseUrl = process.env.NODE_ENV === 'production'
+            ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+            : 'http://localhost:5000';
+
         try {
-            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/maintenance', {
+            const response = await fetch(`${baseUrl}/maintenance`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -34,7 +38,7 @@ const MaintenanceRecords = ({ maintenanceRecords, setMaintenanceRecords, setErro
             if (data && data.items) {
                 setMaintenanceRecords(data.items); // Set the records if they exist
             } else {
-                setError('No maintenance records found.');
+                setError('⏳');
             }
         } catch (error) {
             console.error('Error fetching maintenance records:', error);
@@ -50,7 +54,19 @@ const MaintenanceRecords = ({ maintenanceRecords, setMaintenanceRecords, setErro
 
             {/* Display loading message if data is being fetched */}
             {isLoading ? (
-                <p>Loading maintenance records...</p>
+                <table className="records-table">
+                    <thead>
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>Maintenance Type</th>
+                            <th>Mileage</th>
+                            <th>Last Service Date</th>
+                            <th>Next Service Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
             ) : (
                 <table className="records-table">
                     <thead>
@@ -83,7 +99,7 @@ const MaintenanceRecords = ({ maintenanceRecords, setMaintenanceRecords, setErro
                             })
                         ) : (
                             <tr>
-                                <td colSpan="5">No maintenance records available</td>
+                                <td colSpan="5">vehicle-service-scheduler/src/components/VehicleRecords.js</td>
                             </tr>
                         )}
                     </tbody>

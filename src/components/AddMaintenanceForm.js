@@ -13,12 +13,16 @@ const AddMaintenanceRecord = ({ onCancel }) => {
 
     const navigate = useNavigate();  // Hook to navigate after successful form submission
 
+    const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+        : 'http://localhost:5000';
+
     // Fetch vehicles from the backend on component mount
     useEffect(() => {
         const fetchVehicles = async () => {
             const accessToken = localStorage.getItem('accessToken');
             try {
-                const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/vehiclesList', {
+                const response = await fetch(`${baseUrl}/vehiclesList`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -41,7 +45,7 @@ const AddMaintenanceRecord = ({ onCancel }) => {
         };
     
         fetchVehicles();
-    }, []);
+    }, [baseUrl]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -60,7 +64,7 @@ const AddMaintenanceRecord = ({ onCancel }) => {
 
         try {
             const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/maintenance', {
+            const response = await fetch(`${baseUrl}/maintenance`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

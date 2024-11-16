@@ -1,4 +1,3 @@
-// src/components/ResetPassword.js
 import React, { useState } from 'react';
 import './ResetPassword.css';
 
@@ -9,10 +8,15 @@ const ResetPassword = () => {
     const [message, setMessage] = useState('');
     const [otpSent, setOtpSent] = useState(false);
 
+    // Dynamically set the base URL based on the environment
+    const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
+        : 'http://localhost:5000';
+
     const handleSendOtp = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com/forgot-password', {
+            const response = await fetch(`${baseUrl}/forgot-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -35,7 +39,7 @@ const ResetPassword = () => {
     const handleResetPassword = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/reset-password', {
+            const response = await fetch(`${baseUrl}/reset-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,7 +96,7 @@ const ResetPassword = () => {
                         />
                     </div>
                     <button type="submit">Reset Password</button>
-                    <p><a href = '/login'>Login</a></p>
+                    <p><a href='/login'>Login</a></p>
                 </form>
             )}
             
