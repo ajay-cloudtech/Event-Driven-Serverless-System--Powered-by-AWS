@@ -10,6 +10,7 @@ from components.sqs_service import get_sqs_queue_url
 # Initialize the Boto3 clients
 lambda_client = boto3.client('lambda')
 sqs_client = boto3.client('sqs')
+sns_client = boto3.client('sns', region_name='us-east-1')  # Initialize SNS client
 
 # Lambda function code as a string
 lambda_code = """
