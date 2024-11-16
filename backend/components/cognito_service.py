@@ -289,34 +289,3 @@ def reset_password(user_pool_id, email, otp, new_password):
         return {"error": "OTP code has expired."}
     except Exception as e:
         return {"error": str(e)}
-
-def verify_email(user_pool_id, email, otp_code):
-    """
-    Verify the user's email address using the OTP.
-    """
-    client_id = get_user_pool_client_id(user_pool_id)
-    if not client_id:
-        return {"error": "Client ID not found."}
-
-    # Fetch the username using the email
-    username = get_username_by_email(user_pool_id, email)
-    if not username:
-        return {"error": "User not found."}  # Ensure we have the username
-
-    try:
-        # Verify the user's email using the OTP (passing the OTP code here)
-        response = cognito_client.verify_user_attribute(
-            AccessToken=username,  # Typically you need an access token to perform this
-            AttributeName='email',  # The attribute we want to verify
-            Code=otp_code           # The OTP code entered by the user
-        )
-        return {"message": "Email verified successfully."}
-    except cognito_client.exceptions.InvalidParameterException:
-        return {"error": "Invalid OTP. Please try again."}
-    except cognito_client.exceptions.CodeMismatchException:
-        return {"error": "Invalid OTP. Please try again."}
-    except cognito_client.exceptions.ExpiredCodeException:
-        return {"error": "OTP has expired. Please request a new one."}
-    except Exception as e:
-        logging.error(f"An error occurred during email verification: {e}")
-        return {"error": str(e)}

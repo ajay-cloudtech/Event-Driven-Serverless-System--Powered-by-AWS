@@ -1,6 +1,6 @@
 # auth_routes.py
 from flask import Blueprint, request, jsonify
-from components.cognito_service import register_user, login_user, logout_user, get_user_profile, forgot_password, reset_password, verify_email
+from components.cognito_service import register_user, login_user, logout_user, get_user_profile, forgot_password, reset_password
 from components.cognito_service import get_user_pool_id
 
 auth_bp = Blueprint('auth', __name__)
@@ -91,17 +91,6 @@ def reset_password_route():
     new_password = data.get("newPassword")
 
     result = reset_password(user_pool_id, email, otp, new_password)
-    if "error" in result:
-        return jsonify(result), 400
-    return jsonify(result)
-
-@auth_bp.route('/verify-email', methods=['POST'])
-def verify_registration_route():
-    data = request.get_json()
-    email = data.get("email")
-    otp = data.get("otp")
-
-    result = verify_email(user_pool_id, email, otp)
     if "error" in result:
         return jsonify(result), 400
     return jsonify(result)
