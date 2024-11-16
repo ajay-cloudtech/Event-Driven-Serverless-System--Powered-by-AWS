@@ -7,7 +7,7 @@ const NavBar = () => {
 
     return (
         <nav className="navbar">
-            <h1 className='h1'>Car<span style = {{color: 'green'}}>Care</span>🚗</h1>
+            <h1 className='h1'>Car<span style = {{color: 'red'}}>Care</span>🚗</h1>
             <ul>
                 {accessToken && (
                     <>
