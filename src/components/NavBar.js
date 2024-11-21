@@ -1,11 +1,14 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './NavBar.css'; // Optional: Add this if you want to style it
+import './NavBar.css'; 
 
+// main nav bar function 
 const NavBar = () => {
-    const accessToken = localStorage.getItem('accessToken'); // Check if the user is logged in by the presence of an access token
+    //check if user is logged in by checking access token in local storage
+    const accessToken = localStorage.getItem('accessToken'); 
 
     return (
+        //html component for nav bar
         <nav className="navbar">
             <h1 className='h1'>Car<span style = {{color: 'red'}}>Care</span>🚗</h1>
             <ul>

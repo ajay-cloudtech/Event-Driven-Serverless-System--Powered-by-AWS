@@ -1,33 +1,33 @@
 import React, { useEffect } from 'react';
 import './VehicleAndMaintenanceRecords.css';
 
+// function to fetch and display vehicles data on frontend
 const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
-    // Dynamically set the base URL based on the environment
+    // set the url to local or prod based on the environment dynamically
     const baseUrl = process.env.NODE_ENV === 'production'
         ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
         : 'http://localhost:5000';
 
+    // checks for access token in local storage to get user specific data from vehicles table
     useEffect(() => {
         const fetchVehicles = async () => {
             try {
-                const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
+                const accessToken = localStorage.getItem('accessToken'); 
                 const response = await fetch(`${baseUrl}/vehicles`, {
                     headers: {
-                        'Authorization': `Bearer ${accessToken}` // Attach token for user-specific data
+                        'Authorization': `Bearer ${accessToken}` 
                     }
                 });
 
                 if (!response.ok) throw new Error('Network response was not ok');
 
                 const data = await response.json();
-                console.log('Fetched vehicles:', data); // Log fetched data for debugging
 
-                // Assuming the API returns an array directly; adjust if the structure is different
                 if (Array.isArray(data)) {
-                    setVehicles(data); // Set vehicles if the response is an array
+                    setVehicles(data); 
                 } else {
                     console.error('Expected an array but got:', data);
-                    setVehicles([]); // Set to an empty array on unexpected structure
+                    setVehicles([]); 
                 }
             } catch (error) {
                 console.error('Error fetching vehicles:', error);
@@ -36,8 +36,9 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         };
 
         fetchVehicles();
-    }, [setVehicles, setError]); // Add setVehicles and setError to the dependency array
+    }, [setVehicles, setError]); 
 
+    //edit function for vehicles data on the frontend
     const handleEditVehicle = (vehicleId) => {
         const updatedVehicles = vehicles.map(vehicle => {
             if (vehicle.vehicle_id === vehicleId) {
@@ -48,6 +49,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         setVehicles(updatedVehicles);
     };
 
+    // input change function while edit is active
     const handleInputChange = (vehicleId, field, value) => {
         const updatedVehicles = vehicles.map(vehicle => {
             if (vehicle.vehicle_id === vehicleId) {
@@ -58,15 +60,16 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         setVehicles(updatedVehicles);
     };
 
+    // function to save edit details and put the updated data in vehicles table in the backend
     const handleSaveVehicle = async (vehicleId) => {
         const vehicleToSave = vehicles.find(vehicle => vehicle.vehicle_id === vehicleId);
         try {
-            const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
+            const accessToken = localStorage.getItem('accessToken'); 
             const response = await fetch(`${baseUrl}/vehicles/${vehicleId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}` // Attach token for user-specific data
+                    'Authorization': `Bearer ${accessToken}` 
                 },
                 body: JSON.stringify({
                     make: vehicleToSave.make,
@@ -85,6 +88,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         }
     };
 
+    //function to cancel the edit request
     const handleCancelVehicle = (vehicleId) => {
         const updatedVehicles = vehicles.map(vehicle =>
             vehicle.vehicle_id === vehicleId
@@ -94,14 +98,15 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
         setVehicles(updatedVehicles);
     };
 
+    // function to delete vehicle data, send delete request to vehicle table in the backend 
     const handleDeleteVehicle = async (vehicleId) => {
         if (window.confirm('Are you sure you want to delete this vehicle?')) {
             try {
-                const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
+                const accessToken = localStorage.getItem('accessToken'); 
                 const response = await fetch(`${baseUrl}/vehicles/${vehicleId}`, {
                     method: 'DELETE',
                     headers: {
-                        'Authorization': `Bearer ${accessToken}` // Attach token for user-specific data
+                        'Authorization': `Bearer ${accessToken}` 
                     }
                 });
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -116,6 +121,7 @@ const VehicleRecords = ({ vehicles, setVehicles, setError }) => {
     };
 
     return (
+        //html component to display vehicle data on frontend
         <div>
             <h2>Vehicles</h2>
             <table className="records-table">

@@ -5,18 +5,20 @@ import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import carImage from '../assets/carimage.jpg';
 
+// main function to return dashboard page
 const Dashboard = () => {
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [showVehicleForm, setShowVehicleForm] = useState(false);
     const [showMaintenanceForm, setShowMaintenanceForm] = useState(false);
-    const [vehicleCount, setVehicleCount] = useState(null); // Default to null to show loading state
-    const [maintenanceCount, setMaintenanceCount] = useState(null); // Default to null to show loading state
-    const [loading, setLoading] = useState(true); // Loading state for counts
+    const [vehicleCount, setVehicleCount] = useState(null); 
+    const [maintenanceCount, setMaintenanceCount] = useState(null); 
+    const [upcomingMaintenanceCount, setUpcomingMaintenanceCount] = useState(null);  // New state for upcoming maintenance count
+    const [loading, setLoading] = useState(true); 
 
-    // Fetch token from localStorage or other secure storage
-    const token = localStorage.getItem('accessToken'); // Replace with your token retrieval method
-
+    // fetch token from localStorage 
+    const token = localStorage.getItem('accessToken'); 
+    // set the url to local or prod based on the environment dynamically
     const baseUrl = process.env.NODE_ENV === 'production'
         ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
         : 'http://localhost:5000';
@@ -29,9 +31,9 @@ const Dashboard = () => {
             }
 
             try {
-                setLoading(true); // Set loading state to true while fetching
+                setLoading(true); 
 
-                // Fetch vehicle count
+                // Fetch vehicle count for user
                 const vehicleResponse = await fetch(`${baseUrl}/vehicles/count`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -46,7 +48,7 @@ const Dashboard = () => {
                     setVehicleCount(0);
                 }
 
-                // Fetch maintenance count
+                // Fetch maintenance count for user
                 const maintenanceResponse = await fetch(`${baseUrl}/maintenance/count`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -60,10 +62,25 @@ const Dashboard = () => {
                     console.error('Error fetching maintenance count:', maintenanceData.error || 'Unknown error');
                     setMaintenanceCount(0);
                 }
+
+                // Fetch upcoming maintenance count for user (due in the next 30 days)
+                const upcomingMaintenanceResponse = await fetch(`${baseUrl}/maintenance/upcoming/count`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const upcomingMaintenanceData = await upcomingMaintenanceResponse.json();
+                if (upcomingMaintenanceResponse.ok) {
+                    setUpcomingMaintenanceCount(upcomingMaintenanceData.upcoming_maintenance_count || 0);
+                } else {
+                    console.error('Error fetching upcoming maintenance count:', upcomingMaintenanceData.error || 'Unknown error');
+                    setUpcomingMaintenanceCount(0);
+                }
             } catch (error) {
                 console.error("Failed to fetch counts:", error);
             } finally {
-                setLoading(false); // Set loading state to false after the fetch completes
+                setLoading(false); 
             }
         };
 
@@ -76,13 +93,13 @@ const Dashboard = () => {
 
     const handleAddVehicle = () => {
         setShowVehicleForm(true);
-        setShowMaintenanceForm(false); // Hide Maintenance form if it's already showing
+        setShowMaintenanceForm(false); // hide maintenance form if already visible
         setIsDropdownOpen(false);
     };
 
     const handleAddMaintenance = () => {
         setShowMaintenanceForm(true);
-        setShowVehicleForm(false); // Hide Vehicle form if it's already showing
+        setShowVehicleForm(false); // hide vehicle form if already visible
         setIsDropdownOpen(false);
     };
 
@@ -102,12 +119,13 @@ const Dashboard = () => {
         navigate('/maintenance-records');
     };
 
-    // Handle form submission and redirect to homepage
+    // handle form submission and redirect to homepage
     const handleFormSubmission = () => {
-        navigate('/'); // Redirect to homepage after form submission
+        navigate('/'); 
     };
 
     return (
+        //html component for dashboard page
         <div className="dashboard"
             style={{ 
                 backgroundImage: `url(${carImage})`,
@@ -132,7 +150,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Show only one form based on the user's selection */}
+            {/* show only one form based on the user's selection */}
             {showVehicleForm && <VehicleForm onCancel={handleCancelVehicle} onSubmit={handleFormSubmission} />}
             {showMaintenanceForm && <AddMaintenanceForm vehicles={['Toyota Camry', 'Honda Accord', 'Ford Mustang']} onCancel={handleCancelMaintenance} onSubmit={handleFormSubmission} />}
 
@@ -158,7 +176,9 @@ const Dashboard = () => {
                         </a>
                     </li>
                     <li>
-                        <a href="/maintenance-records" style={{ color: '#4CAF50' }}>Upcoming Maintenance</a>
+                        <a href="/maintenance-records" style={{ color: '#4CAF50' }}>
+                            Upcoming Maintenance - {loading ? "⏳" : upcomingMaintenanceCount}
+                        </a>
                     </li>
                 </ul>
             </div>

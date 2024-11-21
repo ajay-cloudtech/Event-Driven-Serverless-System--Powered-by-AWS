@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
-import './Register.css';  // Import the CSS file
+import { useNavigate } from 'react-router-dom';  
+import './Register.css';  
 
+// main register function to POST user input data to /register route in the backend
 const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
-    const navigate = useNavigate();  // Initialize useNavigate
+    const navigate = useNavigate();  
 
+    // on click handler - passing user input details to backend route 
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        // Dynamically set the base URL based on the environment
+        // set the url to local or prod based on the environment dynamically
         const baseUrl = process.env.NODE_ENV === 'production'
             ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
             : 'http://localhost:5000';
@@ -29,11 +31,11 @@ const Register = () => {
             const data = await response.json();
             setMessage(data.message || data.error);
 
-            // If registration is successful, navigate to login page
+            // if registration is successful - navigate to login page
             if (data.message) {
                 setTimeout(() => {
-                    navigate('/login');  // Redirect to the login page
-                }, 2000); // Optional: Delay the redirect for 2 seconds
+                    navigate('/login');  
+                }, 2000); 
             }
         } catch (error) {
             setMessage('Registration failed: ' + error.message);
@@ -41,7 +43,8 @@ const Register = () => {
     };
 
     return (
-        <div className="register"> {/* Apply the register class for styling */}
+        //html component for register page
+        <div className="register"> 
             <h2>Register</h2>
             <form onSubmit={handleRegister}>
                 <div>
@@ -60,7 +63,7 @@ const Register = () => {
             </form>
             {message && <p>{message}</p>}
             <p>
-                Already a user? <a href="/login">Login</a>  {/* Hyperlink to the login page */}
+                Already a user? <a href="/login">Login</a>  
             </p>
         </div>
     );

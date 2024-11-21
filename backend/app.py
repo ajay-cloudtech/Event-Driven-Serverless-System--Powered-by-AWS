@@ -4,65 +4,60 @@ from routes.vehicle_routes import vehicle_bp
 from routes.maintenance_routes import maintenance_bp
 from components.vehicle_table import create_vehicle_table
 from components.maintenance_table import create_maintenance_table
-from components.sqs_service import create_sqs_queue  # Import the SQS queue creation function
-from components.s3_service import create_bucket, get_bucket_name  # Import S3 functions
+from components.sqs_service import create_sqs_queue  
+from components.s3_service import create_bucket, get_bucket_name  
 from components.lambda_service import create_lambda_function, add_sqs_trigger_to_lambda
-from routes.s3_routes import s3_bp  # Import the S3 routes blueprint
-from components.cognito_service import setup_cognito_resources  # Import Cognito setup function
-from routes.auth_routes import auth_bp  # Import auth routes
+from routes.s3_routes import s3_bp  
+from components.cognito_service import setup_cognito_resources  
+from routes.auth_routes import auth_bp  
 import os
 import logging
 
-# Configure logging at the start of your application
+# configure logging 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__, static_folder='build')
 
-# CORS setup: Allow requests from your frontend
+# setup CORS to allow requests from frontend
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Call the table creation functions to ensure the tables exist
-create_vehicle_table()          # Create Vehicle Table if it doesn't exist
-create_maintenance_table()      # Create Maintenance Table if it doesn't exist
+# create Vehicles table and Maintenance table in DynamoDB
+create_vehicle_table()       
+create_maintenance_table()      
 
-# Set up AWS resources
-queue_name = "VehicleMaintenanceQueue"
-function_name = 'GenerateReportFunction'
-role_arn = 'arn:aws:iam::118706183796:role/LabRole'  # Replace with your actual role ARN
-handler = 'lambda_service.lambda_handler'  # Corrected handler path in Lambda function
+# setup other AWS resources
+queue_name = "VehicleMaintenanceQueue" # SQS queue name
+function_name = 'GenerateReportFunction' # Lambda function name
+role_arn = 'arn:aws:iam::118706183796:role/LabRole'  # AWS role that can be assumed for comms between services
+handler = 'lambda_service.lambda_handler'  # Lambda hanlder
 
 try:
-    # Step 1: Create or retrieve the SQS queue
+    # create the SQS queue
     create_sqs_queue(queue_name)
-    logging.info(f"SQS queue '{queue_name}' created or already exists.")
 
-    # Step 2: Create or retrieve the S3 bucket
-    bucket_name = get_bucket_name()  # Get the S3 bucket name
+    # create the S3 bucket
+    bucket_name = get_bucket_name()
     create_bucket(bucket_name)
-    logging.info(f"S3 bucket '{bucket_name}' created or already exists.")
 
-    # Step 3: Create or retrieve the Lambda function
+    # create the Lambda function
     create_lambda_function(function_name, role_arn)
-    logging.info(f"Lambda function '{function_name}' created or already exists.")
 
-    # Step 4: Add SQS trigger to Lambda function
+    # add SQS trigger to Lambda function
     add_sqs_trigger_to_lambda(function_name)
-    logging.info(f"SQS trigger added to Lambda function '{function_name}'.")
 
-    # Set up Cognito resources
+    # set up Cognito resources - user pool and app client
     user_pool_id, user_pool_client_id = setup_cognito_resources()
-    logging.info(f"User Pool ID: {user_pool_id}, User Pool Client ID: {user_pool_client_id}")
 
 except Exception as e:
     logging.error(f"An error occurred while setting up AWS resources: {e}")
 
-# Register the routes
+# register the routes
 app.register_blueprint(vehicle_bp)
 app.register_blueprint(maintenance_bp)
 app.register_blueprint(s3_bp)
 app.register_blueprint(auth_bp)
 
-# Serve React static files
+# serve react static files in the build
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react_app(path):
@@ -71,5 +66,6 @@ def serve_react_app(path):
     else:
         return send_from_directory('build', 'index.html')
 
+# run the app on all network interfaces (host=0.0.0.0) and port 5000
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import './VehicleAndMaintenanceRecords.css';
 
+// main function to fetch and display data from the maintenance table 
 const MaintenanceRecords = ({ maintenanceRecords, setMaintenanceRecords, setError, vehicles }) => {
-    // Local state to handle loading and error
+    // local state to handle loading and error
     const [isLoading, setIsLoading] = useState(true);
 
+    // fetch maintenance records when the component mounts
     useEffect(() => {
         fetchMaintenanceRecords();
-    }, []); // Fetch maintenance records when the component mounts
+    }, []); 
 
     const fetchMaintenanceRecords = async () => {
         const accessToken = localStorage.getItem('accessToken');
@@ -16,7 +18,7 @@ const MaintenanceRecords = ({ maintenanceRecords, setMaintenanceRecords, setErro
             setIsLoading(false);
             return;
         }
-
+        // set the url to local or prod based on the environment dynamically
         const baseUrl = process.env.NODE_ENV === 'production'
             ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
             : 'http://localhost:5000';
@@ -33,10 +35,9 @@ const MaintenanceRecords = ({ maintenanceRecords, setMaintenanceRecords, setErro
             }
 
             const data = await response.json();
-            console.log('Fetched maintenance records:', data); // Log the response data
 
             if (data && data.items) {
-                setMaintenanceRecords(data.items); // Set the records if they exist
+                setMaintenanceRecords(data.items); 
             } else {
                 setError('⏳');
             }
@@ -49,10 +50,10 @@ const MaintenanceRecords = ({ maintenanceRecords, setMaintenanceRecords, setErro
     };
 
     return (
+        //html compoenent to display maintenance records
         <div>
             <h2>Maintenance Records</h2>
 
-            {/* Display loading message if data is being fetched */}
             {isLoading ? (
                 <table className="records-table">
                     <thead>

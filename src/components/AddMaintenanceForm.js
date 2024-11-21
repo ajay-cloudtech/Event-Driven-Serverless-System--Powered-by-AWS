@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './AddMaintenanceForm.css';
-import { useNavigate } from 'react-router-dom';  // Import the useNavigate hook
+import { useNavigate } from 'react-router-dom';  
 
+// main maintenance form to take input from user and send it to backend
 const AddMaintenanceRecord = ({ onCancel }) => {
     const [vehicles, setVehicles] = useState([]);
     const [selectedVehicle, setSelectedVehicle] = useState('');
@@ -11,13 +12,15 @@ const AddMaintenanceRecord = ({ onCancel }) => {
 
     const maintenanceTypes = ['Comprehensive Service'];
 
-    const navigate = useNavigate();  // Hook to navigate after successful form submission
+    // hook to navigate after successful form submission
+    const navigate = useNavigate();  
 
+    // set the url to local or prod based on the environment dynamically
     const baseUrl = process.env.NODE_ENV === 'production'
         ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
         : 'http://localhost:5000';
 
-    // Fetch vehicles from the backend on component mount
+    // fetch vehicles from the vehicles table in the backend 
     useEffect(() => {
         const fetchVehicles = async () => {
             const accessToken = localStorage.getItem('accessToken');
@@ -47,9 +50,11 @@ const AddMaintenanceRecord = ({ onCancel }) => {
         fetchVehicles();
     }, [baseUrl]);
 
+    //on submit form function to post data to maintenance table in the backend
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        //input data validation
         if (!selectedVehicle || !maintenanceType || !mileage || !lastServiceDate) {
             alert('Please fill out all required fields.');
             return;
@@ -80,15 +85,15 @@ const AddMaintenanceRecord = ({ onCancel }) => {
                 throw new Error('Failed to add maintenance record: ' + response.statusText);
             }
 
-            // Clear the form after successful submission
+            // clear the form after successful submission
             setSelectedVehicle('');
             setMaintenanceType('');
             setMileage('');
             setLastServiceDate('');
             window.alert('Maintenance record added successfully!');
 
-            // Redirect to the /maintenance-records page after successful submission
-            navigate('/maintenance-records');  // Redirect to maintenance records page
+            // redirect to the /maintenance-records page after successful submission
+            navigate('/maintenance-records');  
         } catch (error) {
             console.error('Error adding maintenance record:', error);
             alert(`Failed to add maintenance record: ${error.message}`);
@@ -96,6 +101,7 @@ const AddMaintenanceRecord = ({ onCancel }) => {
     };
 
     return (
+        //html component for maintenance form
         <div className="add-maintenance-form">
             <h2>Add Maintenance Record</h2>
             <form onSubmit={handleSubmit}>

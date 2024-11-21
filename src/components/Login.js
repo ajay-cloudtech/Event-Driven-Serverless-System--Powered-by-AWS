@@ -1,18 +1,20 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
+// main login function to POST user input details to /login route in the backend
 const Login = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
+    // set the url to local or prod based on the environment dynamically
     const baseUrl = process.env.NODE_ENV === 'production'
         ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
         : 'http://localhost:5000';
-
+    
+    // on click handler - passing user input details to backend route 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -26,19 +28,15 @@ const Login = ({ onLogin }) => {
     
             const data = await response.json();
             if (response.ok) {
-                // Save the tokens and username in local storage
+                // save the tokens and username in the local storage
                 localStorage.setItem('accessToken', data.AccessToken);
                 localStorage.setItem('idToken', data.IdToken);
-                localStorage.setItem('userId', data.Username);  // Save user ID
+                localStorage.setItem('userId', data.Username); 
     
-                // Log tokens and user ID to confirm they're set
-                console.log('Access Token:', localStorage.getItem('accessToken'));
-                console.log('ID Token:', localStorage.getItem('idToken'));
-                console.log('User ID:', localStorage.getItem('userId'));  // Log user ID
-    
-                // Update the authentication state in App.js with tokens and user ID
+                // updating the authentication state in App.js with tokens and user id
                 onLogin(data.AccessToken, data.IdToken, data.Username); 
-                navigate('/dashboard'); // Redirect after successful login
+                // navigate to dashboard after successful login
+                navigate('/dashboard'); 
             } else {
                 setMessage(data.error || 'Login failed');
             }
@@ -48,6 +46,7 @@ const Login = ({ onLogin }) => {
     };
 
     return (
+        //html component for login page
         <div className="login">
             <h2>Login</h2>
             <form onSubmit={handleLogin}>

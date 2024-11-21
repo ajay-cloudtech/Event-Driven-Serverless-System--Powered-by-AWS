@@ -1,24 +1,28 @@
 import React, { useState } from 'react';
 import './VehicleForm.css';
-import { useNavigate } from 'react-router-dom';  // Import the useNavigate hook
+import { useNavigate } from 'react-router-dom';  
 
+//main vehicle form function to accept user input and send it to backend
 const VehicleForm = ({ onCancel }) => {
     const [make, setMake] = useState('');
     const [model, setModel] = useState('');
     const [year, setYear] = useState('');
 
-    const navigate = useNavigate();  // Hook to navigate after successful form submission
+    // hook to navigate after successful form submission
+    const navigate = useNavigate();  
 
-    // Dynamically set the base URL based on the environment
+    // set the url to local or prod based on the environment dynamically
     const baseUrl = process.env.NODE_ENV === 'production'
         ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
         : 'http://localhost:5000';
 
+    //on submit form function to post user data to backend 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const vehicleData = { make, model, year };
-        const accessToken = localStorage.getItem('accessToken'); // Retrieve the token
+        //check if user is logged in through local storage access token
+        const accessToken = localStorage.getItem('accessToken'); 
         if (!accessToken) {
             alert('Please log in again.');
             window.location.href = '/login';
@@ -30,7 +34,7 @@ const VehicleForm = ({ onCancel }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`, // Attach the token
+                    'Authorization': `Bearer ${accessToken}`, 
                 },
                 body: JSON.stringify(vehicleData),
             });
@@ -41,7 +45,7 @@ const VehicleForm = ({ onCancel }) => {
             if (!response.ok) {
                 if (response.status === 401) {
                     alert('Session expired. Please log in again.');
-                    window.location.href = '/login';  // Redirect to login page
+                    window.location.href = '/login';  
                     return;
                 }
                 throw new Error(data.error || 'Failed to add vehicle');
@@ -54,7 +58,7 @@ const VehicleForm = ({ onCancel }) => {
             setYear('');
 
             // Redirect to the /maintenance-records page after successful submission
-            navigate('/maintenance-records');  // Redirect to maintenance records page
+            navigate('/maintenance-records');  
         } catch (error) {
             console.error('Error adding vehicle:', error);
             alert(`Failed to add vehicle: ${error.message || 'Unknown error'}`);
@@ -62,6 +66,7 @@ const VehicleForm = ({ onCancel }) => {
     };
 
     return (
+        //html component for vehicle form
         <div className="vehicle-form">
             <h2>Add Vehicle</h2>
             <form onSubmit={handleSubmit}>

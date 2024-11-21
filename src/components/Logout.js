@@ -1,24 +1,25 @@
-// src/components/Logout.js
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+//main logout function 
 const Logout = ({ onLogout }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Clear tokens from localStorage
+        // clear tokens from localStorage
         localStorage.removeItem('accessToken');
         localStorage.removeItem('idToken');
         localStorage.removeItem('userId');
 
-        // Call the onLogout function passed from App.js
+        // call the onLogout function passed from App.js
         onLogout();
 
-        // Redirect to login page
+        // redirect to login page
         navigate('/login');
     }, [navigate, onLogout]);
 
-    return null; // No UI needed for logout
+    //no UI needed for logout
+    return null; 
 };
 
 export default Logout;

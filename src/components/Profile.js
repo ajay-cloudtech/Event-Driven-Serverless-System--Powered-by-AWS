@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './Profile.css';
 
+//main profile function to fetch user details from backend 
 const Profile = () => {
     const [userData, setUserData] = useState(null);
     const [message, setMessage] = useState('');
 
+    //check user is logged in or not with access token in local storage 
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem('accessToken');
@@ -12,7 +14,8 @@ const Profile = () => {
                 setMessage('Please log in to see your profile.');
                 return;
             }
-
+            
+            // set the url to local or prod based on the environment dynamically
             const baseUrl = process.env.NODE_ENV === 'production'
                 ? 'http://vehicle-service-lb-893946001.us-east-1.elb.amazonaws.com'
                 : 'http://localhost:5000';
@@ -20,7 +23,7 @@ const Profile = () => {
             try {
                 const response = await fetch(`${baseUrl}/profile`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`,  // Include 'Bearer' prefix
+                        'Authorization': `Bearer ${token}`,  
                     },
                 });
 
@@ -39,6 +42,7 @@ const Profile = () => {
     }, []);
 
     return (
+        //html component for profile page
         <div className="profile">
             <h1>Profile</h1>
             {message && <p className="error-message">{message}</p>}

@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import NavBar from './components/NavBar';
@@ -13,20 +12,23 @@ import ProtectedRoute from './components/ProtectedRoute';
 import 'font-awesome/css/font-awesome.min.css';
 import ResetPassword from './components/ResetPassword'; 
 
-function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('accessToken'));
 
+function App() {
+    // check if user is logged in through local storage access token
+    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('accessToken'));
+    //update authentication state based on the stored token
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
         setIsAuthenticated(!!token);
     }, []);
 
+    // login function
     const handleLogin = (accessToken, idToken) => {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('idToken', idToken);
         setIsAuthenticated(true);
     };
-
+    //logout function
     const handleLogout = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('idToken');
@@ -38,12 +40,13 @@ function App() {
             <div>
                 <NavBar />
                 <Routes>
+                    {/* redirects the root path to the login page */}
                     <Route path="/" element={<Navigate to="/login" />} />
                     <Route path="/login" element={<Login onLogin={handleLogin} />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/forgot-password" element={<ResetPassword />} />
 
-                    {/* Protected Routes */}
+                    {/* protected routes to check if user is authenticated*/}
                     <Route path="/dashboard" element={
                         <ProtectedRoute isAuthenticated={isAuthenticated}>
                             <Dashboard />
@@ -64,8 +67,6 @@ function App() {
                             <Profile />
                         </ProtectedRoute>
                     } />
-
-                    {/* Logout Route */}
                     <Route path="/logout" element={<Logout onLogout={handleLogout} />} />
                 </Routes>
             </div>

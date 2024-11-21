@@ -7,12 +7,11 @@ from botocore.exceptions import ClientError
 from components.s3_service import create_bucket, upload_to_bucket, get_bucket_name
 from components.sqs_service import get_sqs_queue_url
 
-# Initialize the Boto3 clients
+# initialize the boto3 clients for lambda and sqs
 lambda_client = boto3.client('lambda')
 sqs_client = boto3.client('sqs')
-sns_client = boto3.client('sns', region_name='us-east-1')  # Initialize SNS client
 
-# Lambda function code as a string
+# lambda handler function code as a string
 lambda_code = """
 import json
 import boto3
@@ -65,107 +64,111 @@ def lambda_handler(event, context):
     }
 """
 
+# create in-memory zip file containing the Lambda function code and all required components
 def get_lambda_zip_bytes():
-    """
-    Creates an in-memory zip file containing the Lambda function code and all required components.
-    """
-    # Create an in-memory bytes buffer
+
+    # create an in-memory bytes buffer
     buffer = io.BytesIO()
 
-    # Create a zip file and add the lambda code and necessary components
+    # create a zip file and add the lambda code and necessary components
     with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        # Add the lambda function code to the root of the zip file
+        # add the lambda function code to the root of the zip file
         zip_file.writestr('lambda_service.py', lambda_code)
 
-        # Add the components directory and its contents
+        # add the components directory and its contents
         for folder_name, subfolders, filenames in os.walk('components'):
             for filename in filenames:
                 file_path = os.path.join(folder_name, filename)
-                # Write the file with the correct relative path
+                # write the file with the correct relative path
                 zip_file.write(file_path, os.path.relpath(file_path, os.path.dirname('components')))
 
-        # Add maintenance_utils directory and its contents
+        # add maintenance_utils directory and its contents
         for folder_name, subfolders, filenames in os.walk('maintenance_utils'):
             for filename in filenames:
                 file_path = os.path.join(folder_name, filename)
                 zip_file.write(file_path, os.path.relpath(file_path, os.path.dirname('maintenance_utils')))
     
-    # Get the byte content of the zip file
+    # get the byte content of the zip file
     buffer.seek(0)
     return buffer.read()
 
-
+# function to create lambda function, invoked from app.py
 def create_lambda_function(function_name, role_arn):
-    """
-    Create a Lambda function if it does not exist.
-    
-    :param function_name: The name of the Lambda function.
-    :param role_arn: The ARN of the IAM role that Lambda assumes.
-    :return: A message indicating whether the function was created or already exists.
-    """
+    # check if lambda function already exists
     try:
         response = lambda_client.get_function(FunctionName=function_name)
         return f"Lambda function '{function_name}' already exists."
     except ClientError as e:
         if e.response['Error']['Code'] == 'ResourceNotFoundException':
-            # Retrieve the zip byte string
+            # retrieve the zip byte string
             zip_bytes = get_lambda_zip_bytes()
 
-            # Create the Lambda function using the zip bytes
+            # create the Lambda function using the zip bytes
+            '''
+                using client.create_function with parameters
+                FunctionName - name of the function
+                Runtime - runtime evnironment
+                Role - functions execution role to be assumed for interacting with services like s3
+                Handler - lambda handler function name
+                Code - code for the function
+                Description - description of the function
+                Timeout - time in seconds for function runtime
+                MemorySize - memory available to function at runtime
+            '''
             response = lambda_client.create_function(
                 FunctionName=function_name,
                 Runtime='python3.9',
                 Role=role_arn,
-                Handler='lambda_service.lambda_handler',  # Correct handler path
+                Handler='lambda_service.lambda_handler',  
                 Code={'ZipFile': zip_bytes},
                 Description='Lambda function to generate reports',
                 Timeout=30,
                 MemorySize=128
             )
-
+            # get s3 bucket name and create bucket
             bucket_name = get_bucket_name()
             create_bucket(bucket_name)
             return f"Lambda function '{function_name}' created successfully."
         else:
             return f"Error creating Lambda function: {e.response['Error']['Message']}"
 
+# function to add sqs as a trigger to lambda
 def add_sqs_trigger_to_lambda(function_name, queue_name="VehicleMaintenanceQueue"):
-    """
-    Adds SQS as a trigger to the Lambda function if it does not already exist.
-    
-    :param function_name: The name of the Lambda function.
-    :param queue_name: The name of the SQS queue.
-    :return: A message indicating whether the trigger was added, already exists, or if an error occurred.
-    """
     try:
-        # Get the SQS queue URL
+        # get the SQS queue url
         queue_url = get_sqs_queue_url(queue_name)
         
-        # Get the ARN of the SQS queue
+        # get the ARN of the SQS queue
         queue_attributes = sqs_client.get_queue_attributes(
             QueueUrl=queue_url,
             AttributeNames=['QueueArn']
         )
         queue_arn = queue_attributes['Attributes']['QueueArn']
 
-        # List existing event source mappings for the Lambda function
+        # list existing event source mappings for the Lambda function
         mappings = lambda_client.list_event_source_mappings(
             FunctionName=function_name
         )
 
-        # Check if the SQS trigger already exists
+        # check if the SQS trigger already exists
         for mapping in mappings['EventSourceMappings']:
             if mapping['EventSourceArn'] == queue_arn:
                 return f"SQS trigger already exists for Lambda function '{function_name}'."
 
-        # Create the event source mapping if it does not exist
+        # create the event source mapping if it does not exist
+        '''
+            using client.create_event_source_mapping with parameters
+            EventSourceArn - sqs queue ARN
+            FunctionName -  name of the function
+            Enabled - if true event source mapping is active
+            BatchSize - no. of records that lambda pulls from sqs queue in each batch
+        '''
         lambda_client.create_event_source_mapping(
             EventSourceArn=queue_arn,
             FunctionName=function_name,
             Enabled=True,
-            BatchSize=1,  # Adjust as needed
+            BatchSize=1,  
         )
-
         return f"SQS trigger added to Lambda function '{function_name}'."
     except ClientError as e:
         return f"Error adding SQS trigger: {e.response['Error']['Message']}"
